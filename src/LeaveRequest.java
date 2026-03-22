@@ -101,14 +101,22 @@ public abstract class LeaveRequest implements Approvable {
 
 
     // Methods will be added here
-
-    public void display(LeaveRequest leaveRequest){
-        System.out.println("Request ID: " + leaveRequest.getRequestId());
-        System.out.println("Employee: " + leaveRequest.getEmployee().getName());
-        System.out.println("Start Date: " + leaveRequest.getStartDate());
-        System.out.println("End Date: " + leaveRequest.getEndDate());
-        System.out.println("Status: " + leaveRequest.getStatus());
-        System.out.println("Reason: " + leaveRequest.getReason() + "\n");
+//
+//    public void display(LeaveRequest leaveRequest){
+//        System.out.println("Request ID: " + leaveRequest.getRequestId());
+//        System.out.println("Employee: " + leaveRequest.getEmployee().getName());
+//        System.out.println("Start Date: " + leaveRequest.getStartDate());
+//        System.out.println("End Date: " + leaveRequest.getEndDate());
+//        System.out.println("Status: " + leaveRequest.getStatus());
+//        System.out.println("Reason: " + leaveRequest.getReason() + "\n");
+//    }
+    public void display(){
+        System.out.println("Request ID: " + getRequestId());
+        System.out.println("Employee: " + getEmployee().getName());
+        System.out.println("Start Date: " + getStartDate());
+        System.out.println("End Date: " +  getEndDate());
+        System.out.println("Status: " + getStatus());
+        System.out.println("Reason: " + getReason() + "\n");
     }
 
     public LocalDate stringToDate (String dateString){
@@ -125,7 +133,7 @@ public abstract class LeaveRequest implements Approvable {
         }
     }
 
-    public int remainingLeaveBalance(LeaveRequest leaveRequest){
+    public int remainingLeaveBalance(){
         long daysBetween = ChronoUnit.DAYS.between( stringToDate(getStartDate()),  stringToDate(getEndDate()));
         int remainingBalance = Math.toIntExact(employee.getLeaveBalance() - daysBetween);
         System.out.println("Remaining leave balance: " + remainingBalance);
