@@ -1,4 +1,6 @@
+import java.time.LocalDate; // Import LocalDate
 import java.util.ArrayList;
+import java.io.File;
 
 public class Employee {
     // Properties (attributes)
@@ -43,7 +45,7 @@ public class Employee {
 
     public void setEmployeeId(int employeeId) {
         if (employeeId >= 0) {
-            this.employeeId = leaveBalance;
+            this.employeeId = employeeId;
         } else {
             System.out.println("employeeId cannot be negative.");
         }
@@ -102,106 +104,70 @@ public class Employee {
 
     public void displayLeaveHistory(){
         for (LeaveRequest request : leaveHistory) {
-            request.display();
+            request.display(); // Corrected: no argument needed
             }
         }
 
 
     public static void main(String[] args) {
-        // 1. Create 3 new Employees
-        System.out.println("--- Creating Employees ---");
+        System.out.println("=== LEAVE TRACKING SYSTEM - FILE MANAGEMENT TEST ===\n");
+
+        LeaveTrackingSystem trackingSystem = new LeaveTrackingSystem();
+
+        // 1. Test Directory Initialization
+        System.out.println("1. Initializing File Structure...");
+        trackingSystem.initializeFileStructure();
+
+        // 2. Create Employees
+        System.out.println("\n2. Creating and Saving Employee Data...");
         Employee emp1 = new Employee(101, "Alice Johnson", "Engineering", "alice@example.com");
         Employee emp2 = new Employee(102, "Bob Smith", "Marketing", "bob@example.com");
-        Employee emp3 = new Employee(103, "Charlie Brown", "HR", "charlie@example.com");
-
-        emp1.display();
-        emp2.display();
-        emp3.display();
-
-        // 2. Initialize the LeaveTrackingSystem
-        System.out.println("--- Initializing Leave Tracking System ---");
-        LeaveTrackingSystem trackingSystem = new LeaveTrackingSystem();
         
-        // Add employees to the system (HashMap usage)
         trackingSystem.addEmployee(emp1);
         trackingSystem.addEmployee(emp2);
-        trackingSystem.addEmployee(emp3);
-        System.out.println("Employees added to the system directory.");
+        
+        // Save to CSV
+        trackingSystem.saveEmployeeData();
 
-        // 3. Generate 5 different leave requests for them
-        System.out.println("\n--- Generating Leave Requests ---");
-        
-        // Request 1: Sick Leave for Alice (Pending)
-        LeaveRequest req1 = new SickLeaveRequest(1, emp1, "01-06-2026", "03-06-2026", true);
-        
-        // Request 2: Vacation for Bob (Pending)
-        LeaveRequest req2 = new VacationLeaveRequest(2, emp2, "10-07-2026", "20-07-2026", true);
-        
-        // Request 3: Maternity Leave for Charlie (Pending)
-        LeaveRequest req3 = new MaternityLeaveRequest(3, emp3, "01-08-2026", "01-11-2026", true);
-        
-        // Request 4: Another Sick Leave for Alice (Pending - but no certificate)
-        LeaveRequest req4 = new SickLeaveRequest(4, emp1, "15-06-2026", "16-06-2026", false);
-        
-        // Request 5: Vacation for Bob (Approved - manually set status to show history later)
-        LeaveRequest req5 = new VacationLeaveRequest(5, emp2, "25-12-2026", "01-01-2027", true);
-        // We'll add this one too, it will be pending initially
-        
-        // Add requests to employee history (ArrayList usage)
-        emp1.addLeaveRequest(req1);
-        emp2.addLeaveRequest(req2);
-        emp3.addLeaveRequest(req3);
-        emp1.addLeaveRequest(req4);
-        emp2.addLeaveRequest(req5);
+        // 3. Test Loading Data
+        System.out.println("\n3. Testing Data Loading (Clearing and reloading)...");
+        // We create a new system to prove it loads from file
+        LeaveTrackingSystem newSystem = new LeaveTrackingSystem();
+        newSystem.loadEmployeeData();
+        Employee loadedEmp = newSystem.getEmployeeById(101);
+        if (loadedEmp != null) {
+            System.out.println("Successfully loaded: " + loadedEmp.getName());
+        }
 
-        // Add requests to the main tracking system (Queue, HashSet, HashMap usage)
-        trackingSystem.addLeaveRequest(req1);
-        trackingSystem.addLeaveRequest(req2);
-        trackingSystem.addLeaveRequest(req3);
-        trackingSystem.addLeaveRequest(req4);
-        trackingSystem.addLeaveRequest(req5);
+        // 4. Test Saving Leave Requests to Files (CRUD - Create)
+        System.out.println("\n4. Saving Individual Leave Requests to Files...");
+        // Using LocalDate.of() for dates
+        LeaveRequest req1 = new SickLeaveRequest(1, emp1, LocalDate.of(2026, 6, 1), LocalDate.of(2026, 6, 3), true);
+        LeaveRequest req2 = new VacationLeaveRequest(2, emp2, LocalDate.of(2026, 7, 10), LocalDate.of(2026, 7, 20), true);
         
-        System.out.println("All requests added to the system.");
+        trackingSystem.saveLeaveRequest(req1);
+        trackingSystem.saveLeaveRequest(req2);
 
-        // 4. Test HashSet: Check departments with pending requests
-        System.out.println("\n--- Testing HashSet (Departments with Pending Requests) ---");
-        System.out.println("Does Engineering have pending requests? " + trackingSystem.hasPendingRequests("Engineering"));
-        System.out.println("Does Marketing have pending requests? " + trackingSystem.hasPendingRequests("Marketing"));
-        System.out.println("Does Sales have pending requests? " + trackingSystem.hasPendingRequests("Sales")); // Should be false
+        // 5. Test Directory Listing
+        System.out.println("\n5. Listing Request Files for Employees...");
+        trackingSystem.listRequestsForEmployee(101);
 
-        // 5. Test HashMap: Retrieve employee by ID
-        System.out.println("\n--- Testing HashMap (Employee Lookup) ---");
-        Employee retrievedEmp = trackingSystem.getEmployeeById(102);
-        if (retrievedEmp != null) {
-            System.out.println("Retrieved Employee 102: " + retrievedEmp.getName());
+        // 6. Test Backup (Byte Streams)
+        System.out.println("\n6. Creating Data Backup...");
+        trackingSystem.backupData();
+
+        // 7. Test Image Handling (Simulation)
+        // Note: For this to work without error, you would need a real 'profile.jpg' file
+        /*
+        System.out.println("\n7. Testing Image Save (Simulated)...");
+        File dummyImage = new File("profile.jpg"); 
+        if(dummyImage.exists()) {
+            trackingSystem.saveEmployeeImage(emp1, dummyImage);
         } else {
-            System.out.println("Employee not found.");
+            System.out.println("Skip image test: 'profile.jpg' not found.");
         }
+        */
 
-        // 6. Test Queue: Process requests
-        System.out.println("\n--- Testing Queue (Processing Pending Requests) ---");
-        
-        // Process 1st request (Sick Leave for Alice)
-        System.out.println("Processing next request...");
-        trackingSystem.processNextRequest(); 
-        
-        // Process 2nd request (Vacation for Bob)
-        System.out.println("Processing next request...");
-        trackingSystem.processNextRequest();
-        
-        // Change status manually to test history
-        req5.changeStatus("Approved", "System Admin");
-        
-        System.out.println("\n--- Testing Status History for Request #5 ---");
-        for (LeaveRequest.StatusChange change : req5.getStatusHistory()) {
-             System.out.println("Old Status: " + change.getOldStatus() +
-                    ", New Status: " + change.getNewStatus() +
-                    ", Date: " + change.getChangeDate() +
-                    ", Changed By: " + change.getChangedBy());
-        }
-        
-        System.out.println("\n--- Final Employee Leave History Check ---");
-        System.out.println("Leave History for Alice:");
-        emp1.displayLeaveHistory();
+        System.out.println("\n=== ALL TESTS COMPLETED ===");
     }
 }

@@ -1,10 +1,12 @@
+import java.time.LocalDate;
+
 public class VacationLeaveRequest extends LeaveRequest {
     private boolean managerApproval;
 
     public VacationLeaveRequest(int requestId, Employee employee,
-                                String startDate, String endDate,
+                                LocalDate startDate, LocalDate endDate, // Changed from String to LocalDate
                                 boolean managerApproval) {
-        super(requestId, employee, startDate, endDate, "Vacation Leave");
+        super(requestId, employee, startDate, endDate, "Vacation Leave"); // Pass LocalDate to super
         this.managerApproval = managerApproval;
     }
     public VacationLeaveRequest() {

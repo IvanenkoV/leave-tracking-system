@@ -1,11 +1,13 @@
+import java.time.LocalDate;
+
 // Child class
 public class SickLeaveRequest extends LeaveRequest {
     private boolean medicalCertificateProvided;
 
     public SickLeaveRequest(int requestId, Employee employee,
-                            String startDate, String endDate,
+                            LocalDate startDate, LocalDate endDate, // Changed from String to LocalDate
                             boolean medicalCertificateProvided) {
-        super(requestId, employee, startDate, endDate, "Sick Leave");
+        super(requestId, employee, startDate, endDate, "Sick Leave"); // Pass LocalDate to super
         this.medicalCertificateProvided = medicalCertificateProvided;
     }
 
